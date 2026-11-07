@@ -33,6 +33,8 @@ jobs:
           packages: 'platform-tools'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Validate production game basics
+        run: node scripts/check-release.mjs
       - name: Prepare unchanged web game
         run: node scripts/prepare-web.mjs
       - name: Generate Android project
