@@ -1,0 +1,15 @@
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const html=readFileSync('index.html','utf8');
+const js=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+assert.ok(js,'Inline game script exists');
+new Function(js);
+assert.ok(!html.includes('SOLVE PERFECT GAME'),'Debug solver UI removed');
+assert.ok(!html.includes('if(false){'),'Debug bypasses removed');
+assert.ok(html.includes('if(coins<c[3])'),'Avatar purchases verify balance');
+assert.ok(html.includes('coins-=c[3]'),'Avatar purchases deduct balance');
+assert.ok(html.includes('if(coins<cost)'),'Power-ups verify balance');
+assert.ok(html.includes('coins-=cost'),'Power-ups deduct balance');
+assert.ok(html.includes('offline-landmark'),'Offline landmark illustration included');
+assert.ok(!html.includes('Rewarded ad demo'),'Fake advertising removed');
+console.log('Release smoke checks passed');
