@@ -1,0 +1,11 @@
+{
+  "appId": "com.escapethesun.dubai",
+  "appName": "Escape the Sun: Dubai",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
