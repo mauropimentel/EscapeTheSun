@@ -1,12 +1,13 @@
 {
   "name": "escape-the-sun-dubai",
-  "version": "1.0.0-rc2",
+  "version": "2.0.0-beta.1",
   "private": true,
   "description": "Escape the Sun: Dubai mobile app",
   "scripts": {
     "android:sync": "node scripts/prepare-web.mjs && npx cap sync android",
     "android:add": "node scripts/prepare-web.mjs && npx cap add android",
-    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug"
+    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug",
+    "test:release": "node scripts/check-release.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.0",
