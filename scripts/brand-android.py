@@ -7,10 +7,19 @@ for name,size in [('mdpi',48),('hdpi',72),('xhdpi',96),('xxhdpi',144),('xxxhdpi'
     n=size*4
     im=Image.new('RGBA',(n,n),(22,56,67,255))
     d=ImageDraw.Draw(im)
-    d.ellipse((n*.19,n*.10,n*.81,n*.72),fill=(249,199,72,255))
-    d.polygon([(0,n*.74),(n*.22,n*.60),(n*.31,n*.68),(n*.50,n*.46),(n*.65,n*.68),(n*.82,n*.55),(n,n*.75),(n,n),(0,n)],fill=(48,111,111,255))
-    d.rectangle((n*.14,n*.73,n*.86,n*.79),fill=(247,227,170,255))
-    d.ellipse((n*.41,n*.70,n*.59,n*.88),fill=(252,241,210,255))
+    # Original playful icon: Burj Al Arab's sail with a tiny tourist hiding in its shade.
+    d.ellipse((n*.57,n*.07,n*.94,n*.44),fill=(255,209,93,255))
+    d.ellipse((n*.11,n*.68,n*.89,n*.97),fill=(235,180,105,255))
+    d.polygon([(n*.21,n*.78),(n*.44,n*.20),(n*.49,n*.10),(n*.52,n*.77)],fill=(246,241,217,255))
+    d.polygon([(n*.48,n*.22),(n*.75,n*.73),(n*.53,n*.73)],fill=(147,214,226,255))
+    d.line([(n*.49,n*.13),(n*.49,n*.81)],fill=(26,61,80,255),width=max(2,int(n*.024)))
+    for y in (.36,.48,.60):
+        d.line([(n*.47,n*y),(n*(.54+(y-.30)*.29),n*y)],fill=(30,85,111,255),width=max(2,int(n*.012)))
+    d.ellipse((n*.21,n*.71,n*.33,n*.83),fill=(255,221,172,255))
+    d.arc((n*.22,n*.74,n*.31,n*.81),0,180,fill=(26,57,69,255),width=max(2,int(n*.015)))
+    d.pieslice((n*.19,n*.68,n*.35,n*.75),180,360,fill=(247,190,72,255))
+    d.rectangle((n*.19,n*.75,n*.35,n*.78),fill=(245,194,68,255))
+    d.ellipse((n*.20,n*.78,n*.35,n*.90),fill=(42,79,91,255))
     im=im.resize((size,size),Image.Resampling.LANCZOS)
     folder=root/f'mipmap-{name}'
     folder.mkdir(parents=True,exist_ok=True)
@@ -31,3 +40,14 @@ splash.save(drawable/'escape_splash.png')
 # Capacitor Android's generated splash screen references drawable/splash.
 splash.save(drawable/'splash.png')
 print('Generated original splash artwork')
+
+# Android 12+ system splash uses the launcher icon on a solid background.
+# Earlier Android versions use a dedicated branded launch background.
+values=root/'values'
+styles=values/'styles.xml'
+if styles.exists():
+    data=styles.read_text()
+    data=data.replace('<item name="android:windowBackground">@drawable/splash</item>', '<item name="android:windowBackground">@drawable/splash</item>')
+    if 'android:windowSplashScreenBackground' not in data:
+        data=data.replace('</style>', '<item name="android:windowSplashScreenBackground">#163843</item><item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item></style>',1)
+    styles.write_text(data)
