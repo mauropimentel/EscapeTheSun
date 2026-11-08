@@ -13,7 +13,7 @@ This is a **debug-signed test APK**, not a production release. The generated And
 Requires Node.js 22, Java 21 and the Android SDK.
 
 ```sh
-npm ci
+npm install --no-audit --no-fund
 node scripts/prepare-web.mjs
 npx cap add android
 cd android
@@ -21,3 +21,18 @@ cd android
 ```
 
 App ID: `com.escapethesun.dubai`. The game remains offline-capable except for external landmark images and Wikipedia links; local photo bundling is a separate task.
+
+## Release preparation (not yet store-ready)
+
+The CI workflow now also attempts `bundleRelease` and uploads an **unsigned** AAB named `escape-the-sun-dubai-unsigned-release-aab`. It is for validating the release build pipeline, **not** for uploading to Google Play. The APK is debug-signed and for device testing only.
+
+Before publishing:
+
+1. Keep a persistent, reviewed Android project (rather than generating one on each CI run), including stable `versionCode` and `versionName`.
+2. Create and securely back up a **production upload keystore**. Never commit private keys or passwords. Configure CI secrets and signed `bundleRelease` separately.
+3. Complete Play Console setup, package identity, Data safety form, privacy policy URL, store screenshots and content declarations.
+4. Verify the splash screen and adaptive launcher icon on a real Android 12+ device.
+5. Package appropriately licensed landmark photos with per-photo author, source, license and attribution. Current builds use original offline illustrations when network photos cannot load.
+6. Test game economy, replay rewards, accessibility, offline behavior, upgrade installs and signing before submitting to testers.
+
+Economy: first wins award up to 60 coins; replay wins award 10–35 coins, making high-priced cosmetic unlocks achievable through play. No real-money purchases or ad SDK are present.
