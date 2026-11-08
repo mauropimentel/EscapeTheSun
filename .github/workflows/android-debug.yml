@@ -46,6 +46,16 @@ jobs:
       - name: Build debug APK
         working-directory: android
         run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - name: Build unsigned release AAB for pre-publication validation
+        working-directory: android
+        run: ./gradlew bundleRelease --no-daemon
+      - name: Upload unsigned release AAB (not Play Store ready)
+        uses: actions/upload-artifact@v4
+        with:
+          name: escape-the-sun-dubai-unsigned-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 14
       - name: Upload installable debug APK
         uses: actions/upload-artifact@v4
         with:
