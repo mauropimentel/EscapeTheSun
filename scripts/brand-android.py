@@ -41,13 +41,25 @@ splash.save(drawable/'escape_splash.png')
 splash.save(drawable/'splash.png')
 print('Generated original splash artwork')
 
-# Android 12+ system splash uses the launcher icon on a solid background.
-# Earlier Android versions use a dedicated branded launch background.
+# Apply splash to the actual Capacitor launch theme, not to the regular app theme.
+# Android 12+ uses a centered launcher icon and a brand-colored background.
+import re
 values=root/'values'
 styles=values/'styles.xml'
 if styles.exists():
     data=styles.read_text()
-    data=data.replace('<item name="android:windowBackground">@drawable/splash</item>', '<item name="android:windowBackground">@drawable/splash</item>')
-    if 'android:windowSplashScreenBackground' not in data:
-        data=data.replace('</style>', '<item name="android:windowSplashScreenBackground">#163843</item><item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item></style>',1)
-    styles.write_text(data)
+    pattern=r'(<style[^>]*name="AppTheme.NoActionBarLaunch"[^>]*>)([\\s\\S]*?)(</style>)'
+    def patch(match):
+        body=match.group(2)
+        body=re.sub(r'<item name="android:windowBackground">.*?</item>','',body)
+        body=re.sub(r'<item name="android:windowSplashScreenBackground">.*?</item>','',body)
+        body=re.sub(r'<item name="android:windowSplashScreenAnimatedIcon">.*?</item>','',body)
+        body+='\\n<item name="android:windowBackground">@drawable/splash</item>\\n'
+        body+='<item name="android:windowSplashScreenBackground">#163843</item>\\n'
+        body+='<item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>\\n'
+        return match.group(1)+body+match.group(3)
+    updated,count=re.subn(pattern,patch,data)
+    if count!=1:
+        raise RuntimeError('Expected Capacitor Android launch theme not found')
+    styles.write_text(updated)
+print('Configured Android launch theme')
