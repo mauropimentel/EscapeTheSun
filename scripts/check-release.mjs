@@ -19,4 +19,8 @@ assert.ok(html.includes('i+1>progress'),'Direct level access is gated');
 assert.ok(html.includes('coins-=c[3]'),'Closet deducts avatar cost');
 assert.ok(html.includes('coinBurst(earnedLast)'),'Win reward animation exists');
 assert.ok(!html.includes('id="leaderboard"'),'Map scoreboard removed');
+assert.ok(html.includes('id="winresult"'),'Victory overlay exists');
+assert.ok(html.includes('showWinResult(perfect,score,earnedLast)'),'Win summary triggered after victory');
+assert.ok(html.includes("$('wincontinue').onclick"),'Next-level victory button wired');
+assert.ok(html.includes("selected===MAX-1"),'Final level has completion navigation');
 console.log('Release smoke checks passed');
