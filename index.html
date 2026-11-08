@@ -97,27 +97,29 @@ function unlockedRegion(i){return i===0}
 function regionPanel(i){const d=REGIONS[i],open=unlockedRegion(i),first=1;return '<div class="region-card"><h3>'+d[4]+' '+d[0]+' '+(open?'🔓':'🔒')+'</h3><small>'+d[1]+'</small>'+(open?'<div class="region-levels">'+Array.from({length:20},(_,j)=>{const n=first+j,locked=n>progress;return '<button data-level="'+n+'" class="'+(n===progress?'nextlevel':'')+'" '+(locked?'disabled':'')+'>'+(locked?'🔒 ':n<progress?'✓ ':'')+n+'</button>'}).join('')+'</div>':'<p>Coming Soon · more regions are in development.</p>')+'</div>'}
 function drawDubaiMap(){
  // Stylized Dubai coastal silhouette, not a street map. North-east is at the top.
+ // Approximate Dubai's coast running SW (Marina) to NE (Creek), not an administrative boundary map.
  const shapes=[
-  'M218 30 L340 19 L355 111 L327 151 L286 160 L235 141 L196 96 Z',
-  'M51 337 L101 291 L155 281 L190 307 L174 374 L121 424 L58 434 L30 390 Z',
-  'M54 238 L99 195 L153 191 L198 222 L196 289 L158 315 L103 296 L53 326 L25 292 Z',
-  'M169 166 L215 131 L283 159 L326 151 L314 238 L260 281 L199 306 L166 276 L194 225 Z'
+  'M236 57 Q258 43 287 29 L330 21 L346 66 L334 116 L302 135 L270 117 L238 104 Z',
+  'M30 342 Q43 325 65 307 L103 281 L133 300 L142 346 L112 387 L67 421 L34 408 L20 380 Z',
+  'M61 247 Q84 222 113 210 L157 193 L181 225 L168 273 L133 300 L103 281 L65 307 L39 287 Z',
+  'M155 178 Q183 147 212 126 L238 104 L270 117 L302 135 L287 182 L251 224 L207 252 L168 273 L181 225 Z'
  ];
- const centers=[[272,83],[103,373],[105,255],[250,213]];
+ const centers=[[283,73],[77,355],[109,254],[224,180]];
  const order=[0,3,2,1];
  const svg='<svg viewBox="0 0 380 470" role="img" aria-label="Stylized Dubai coastline divided into four selectable regions" xmlns="http://www.w3.org/2000/svg">'+
  '<defs><linearGradient id="sea" x2="0" y2="1"><stop stop-color="#4ca6c2"/><stop offset="1" stop-color="#2c7799"/></linearGradient></defs>'+
  '<rect width="380" height="470" fill="url(#sea)"/>'+
- '<path d="M16 445 Q49 420 58 434 L121 424 L174 374 L190 307 L260 281 L314 238 L326 151 L355 111 L340 19 L380 0 L380 470 L0 470 Z" fill="#d9b77b" opacity=".55"/>'+
+ '<path d="M0 445 Q50 425 80 406 Q116 376 142 346 Q180 275 207 252 Q265 200 287 182 Q329 130 346 66 L330 21 L380 0 L380 470 L0 470 Z" fill="#d9b77b" opacity=".65"/>'+
  '<path d="M23 443 Q50 414 80 416 M9 352 Q27 326 49 325 M17 202 Q45 182 70 184" stroke="#d4f3ee" stroke-width="2" fill="none" opacity=".6"/>'+
  order.map(i=>{const p=centers[i],open=unlockedRegion(i),selected=activeRegion===i;return '<g class="regionhit" data-region="'+i+'" tabindex="0" role="button" aria-label="'+REGIONS[i][0]+(open?'':' locked')+'"><path class="mapzone '+(selected?'selected':open?'open':'locked')+'" d="'+shapes[i]+'"/><text class="maplabel '+(open?'':'locked')+'" x="'+p[0]+'" y="'+(p[1]-13)+'">'+(open?REGIONS[i][4]:'🔒')+'</text><text class="maplabel '+(open?'':'locked')+'" x="'+p[0]+'" y="'+(p[1]+8)+'">'+['OLD DUBAI','MARINA','PALM','DOWNTOWN'][i]+'</text><text class="maphint" x="'+p[0]+'" y="'+(p[1]+25)+'">'+(open?'20 LEVELS':'COMING SOON')+'</text></g>'}).join('')+
+ '<g opacity=".95" font-size="19" text-anchor="middle"><text x="305" y="45">⛵</text><text x="244" y="153">🏙️</text><text x="135" y="232">🌴</text><text x="77" y="330">🎡</text></g><path d="M56 349 Q85 306 114 263 T208 196 T288 90" stroke="#f7e8a4" stroke-width="3" stroke-dasharray="5 7" fill="none" opacity=".55"/>'+
  '<text x="76" y="75" font-size="16" font-weight="800" fill="#e3f8f6" opacity=".8" transform="rotate(-35 76 75)">ARABIAN GULF</text><text x="185" y="455" class="maphint">Stylized Dubai adventure map · not to scale</text></svg>';
  $('dubaimap').innerHTML=svg;
  document.querySelectorAll('.regionhit').forEach(el=>{const i=Number(el.dataset.region);el.addEventListener('click',()=>chooseRegion(i));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chooseRegion(i)}})});
 }
 function closeRegion(){$('seasons').classList.add('hide');activeRegion=-1;drawDubaiMap()}
 $('close-region').onclick=closeRegion;$('seasons').addEventListener('click',e=>{if(e.target===$('seasons'))closeRegion()});
-function chooseRegion(i){activeRegion=i;$('region-content').innerHTML=regionPanel(i);$('seasons').classList.remove('hide');document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{closeRegion();prepare(Number(b.dataset.level)-1)});drawDubaiMap()}
+function chooseRegion(i){activeRegion=i;$('region-content').innerHTML=regionPanel(i);$('seasons').classList.remove('hide');document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{if(b.disabled)return;closeRegion();prepare(Number(b.dataset.level)-1)});drawDubaiMap()}
 function showUnlockCard(i){openInfo('🔓 NEW REGION UNLOCKED!',REGIONS[i][0],'Amazing! You finished all 5 levels in the previous region. Explore '+REGIONS[i][0]+' and discover its new challenges!',REGIONS[i][4])}
 
 const NAME_ADJ=['Sunny','Shady','Desert','Cool','Sneaky','Golden','Chilly','Daring'],NAME_NOUN=['Camel','Falcon','Gecko','Nomad','Oryx','Explorer','Penguin','Rider'];
