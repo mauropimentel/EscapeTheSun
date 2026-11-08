@@ -48,15 +48,15 @@ values=root/'values'
 styles=values/'styles.xml'
 if styles.exists():
     data=styles.read_text()
-    pattern=r'(<style[^>]*name="AppTheme.NoActionBarLaunch"[^>]*>)([\\s\\S]*?)(</style>)'
+    pattern=r'(<style[^>]*name="AppTheme.NoActionBarLaunch"[^>]*>)([\s\S]*?)(</style>)'
     def patch(match):
         body=match.group(2)
         body=re.sub(r'<item name="android:windowBackground">.*?</item>','',body)
         body=re.sub(r'<item name="android:windowSplashScreenBackground">.*?</item>','',body)
         body=re.sub(r'<item name="android:windowSplashScreenAnimatedIcon">.*?</item>','',body)
-        body+='\\n<item name="android:windowBackground">@drawable/splash</item>\\n'
-        body+='<item name="android:windowSplashScreenBackground">#163843</item>\\n'
-        body+='<item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>\\n'
+        body+='\n<item name="android:windowBackground">@drawable/splash</item>\n'
+        body+='<item name="android:windowSplashScreenBackground">#163843</item>\n'
+        body+='<item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>\n'
         return match.group(1)+body+match.group(3)
     updated,count=re.subn(pattern,patch,data)
     if count!=1:
